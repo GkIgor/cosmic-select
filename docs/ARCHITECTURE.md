@@ -17,6 +17,8 @@ internal/config     local core-flow settings
 internal/domain     session state and supported actions
 internal/ocr        OCR text cleanup
 internal/ports      contracts for portal, shortcut, and OCR adapters
+internal/ui         GTK4 window shell (build tag: gtk4)
+internal/portal     COSMIC/XDG portal adapters
 ```
 
 ## Boundaries
@@ -27,6 +29,7 @@ internal/ports      contracts for portal, shortcut, and OCR adapters
 - `internal/ocr` receives local OCR output and returns normalized text.
 - Portal adapters must pass selected image bytes directly to OCR and must not persist screenshots.
 - External translation and AI calls will receive extracted text only after an explicit user action.
+- GTK4 code is isolated in `internal/ui`; the domain and coordinator remain toolkit-independent.
 
 ## Next implementation step
 
