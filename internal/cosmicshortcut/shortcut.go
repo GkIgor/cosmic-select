@@ -12,7 +12,7 @@ import (
 var ErrInvalidConfig = errors.New("invalid COSMIC shortcut configuration")
 
 const (
-	defaultKey         = "S"
+	defaultKey         = "s"
 	configRelativePath = "com.system76.CosmicSettings.Shortcuts/v1/custom"
 )
 
@@ -45,11 +45,15 @@ func RenderDefault(existing, executable string) (string, error) {
 	if !strings.HasPrefix(trimmed, "{") || !strings.HasSuffix(trimmed, "}") {
 		return "", ErrInvalidConfig
 	}
-	if strings.Contains(trimmed, executable+" --activate") {
+	body := strings.TrimSpace(trimmed[1 : len(trimmed)-1])
+	currentEntry := defaultEntry(executable)
+	if strings.Contains(trimmed, currentEntry) {
 		return existing, nil
 	}
-
-	body := strings.TrimSpace(trimmed[1 : len(trimmed)-1])
+	legacyEntry := fmt.Sprintf("    (modifiers: [Super, Shift], key: %q): %s,", "S", DefaultCommand(executable))
+	if strings.Contains(existing, legacyEntry) {
+		return strings.Replace(existing, legacyEntry, currentEntry, 1), nil
+	}
 	return renderMap(body, executable), nil
 }
 
@@ -101,7 +105,7 @@ func InstallDefault(configDir, executable string) (string, error) {
 }
 
 func renderMap(existing, executable string) string {
-	entry := fmt.Sprintf("    (modifiers: [Super, Shift], key: %q): %s,\n", defaultKey, DefaultCommand(executable))
+	entry := defaultEntry(executable)
 	if existing == "" {
 		return "{\n" + entry + "}\n"
 	}
@@ -109,4 +113,8 @@ func renderMap(existing, executable string) string {
 		return "{\n" + existing + "\n" + entry + "}\n"
 	}
 	return "{\n" + existing + ",\n" + entry + "}\n"
+}
+
+func defaultEntry(executable string) string {
+	return fmt.Sprintf("    (modifiers: [Super, Shift], key: %q): %s,\n", defaultKey, DefaultCommand(executable))
 }

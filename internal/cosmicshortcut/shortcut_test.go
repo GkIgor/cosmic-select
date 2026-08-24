@@ -13,8 +13,19 @@ func TestRenderDefaultPreservesExistingBindings(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(got, "System(Terminal)") || !strings.Contains(got, "key: \"S\"") || !strings.Contains(got, "--activate") {
+	if !strings.Contains(got, "System(Terminal)") || !strings.Contains(got, "key: \"s\"") || !strings.Contains(got, "--activate") {
 		t.Fatalf("shortcut was not preserved or added: %s", got)
+	}
+}
+
+func TestRenderDefaultMigratesUppercaseShortcut(t *testing.T) {
+	existing := "{\n    (modifiers: [Super, Shift], key: \"S\"): Spawn(\"/usr/local/bin/cosmic-select --activate\"),\n}\n"
+	got, err := RenderDefault(existing, "/usr/local/bin/cosmic-select")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(got, `key: "S"`) || !strings.Contains(got, `key: "s"`) {
+		t.Fatalf("uppercase shortcut was not migrated: %s", got)
 	}
 }
 
