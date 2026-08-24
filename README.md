@@ -19,6 +19,8 @@ COSMIC is the only supported and tested desktop environment. The application is 
 
 The repository currently contains the Go project skeleton. Product requirements and implementation boundaries are defined in [`docs/PRD - COSMIC Select.md`](docs/PRD%20-%20COSMIC%20Select.md), and repository-level guidance for coding agents is in [`AGENTS.md`](AGENTS.md).
 
+The initial application foundation is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). It provides a testable flow coordinator, explicit session states, local OCR text cleanup, minimal settings defaults, and interfaces for the future COSMIC portal adapters.
+
 ## Development
 
 Run the basic checks with:
