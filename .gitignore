@@ -1,0 +1,8 @@
+# Go build artifacts
+/cosmic-select
+/bin/
+
+# Local development files
+.env
+.env.*
+*.log
