@@ -38,3 +38,12 @@ go test -tags gtk4 ./...
 ```
 
 The current window is intentionally small: it is the UI shell for checking COSMIC portal support. Selection overlay, local OCR, and the action picker are added in their respective milestones.
+
+If the installed COSMIC portal does not expose Global Shortcuts, the window offers an explicit native COSMIC fallback using `Super + Shift + S`. It writes the custom shortcut under the user's COSMIC configuration and launches the persistent `cosmic-select --activate` binary.
+
+For the fallback to remain available after the terminal closes, build a persistent binary first:
+
+```sh
+mkdir -p "$HOME/.local/bin"
+go build -tags gtk4 -o "$HOME/.local/bin/cosmic-select" ./cmd/cosmic-select
+```

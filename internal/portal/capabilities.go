@@ -46,7 +46,7 @@ func (c *Client) CheckCapabilities(ctx context.Context) (Capabilities, error) {
 	if err != nil {
 		return Capabilities{}, fmt.Errorf("%w: global shortcuts portal: %v", ErrPortalUnavailable, err)
 	}
-	if screenshotTargets&areaTarget == 0 {
+	if !screenshotTargetOption && targetsErr == nil {
 		return Capabilities{}, fmt.Errorf("%w: area selection is not supported", ErrPortalUnavailable)
 	}
 

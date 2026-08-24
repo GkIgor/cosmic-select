@@ -1,6 +1,6 @@
 package config
 
-const defaultShortcut = "<Super><Shift>space"
+const defaultShortcut = "<Super><Shift>s"
 
 // Settings contains only preferences required by the core flow.
 type Settings struct {

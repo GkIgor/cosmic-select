@@ -19,6 +19,7 @@ internal/ocr        OCR text cleanup
 internal/ports      contracts for portal, shortcut, and OCR adapters
 internal/ui         GTK4 window shell (build tag: gtk4)
 internal/portal     COSMIC/XDG portal adapters
+internal/cosmicshortcut COSMIC-native shortcut fallback
 ```
 
 ## Boundaries
@@ -30,6 +31,7 @@ internal/portal     COSMIC/XDG portal adapters
 - Portal adapters must pass selected image bytes directly to OCR and must not persist screenshots.
 - External translation and AI calls will receive extracted text only after an explicit user action.
 - GTK4 code is isolated in `internal/ui`; the domain and coordinator remain toolkit-independent.
+- When the Global Shortcuts portal is unavailable, the user may explicitly install a COSMIC-native `Super + Shift + S` custom shortcut that launches `cosmic-select --activate`.
 
 ## Next implementation step
 

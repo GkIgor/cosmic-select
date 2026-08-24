@@ -68,7 +68,7 @@ func (s *GlobalShortcuts) Register(ctx context.Context, trigger func()) error {
 			ID: s.shortcutID,
 			Options: map[string]dbus.Variant{
 				"description":       dbus.MakeVariant("Select text from the screen"),
-				"preferred_trigger": dbus.MakeVariant("<Super><Shift>space"),
+				"preferred_trigger": dbus.MakeVariant("<Super><Shift>s"),
 			},
 		}},
 		"",
