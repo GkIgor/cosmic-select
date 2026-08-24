@@ -18,6 +18,7 @@ const (
 type Capabilities struct {
 	ScreenshotVersion      uint32
 	ScreenshotTargets      uint32
+	ScreenshotTargetOption bool
 	GlobalShortcutsVersion uint32
 }
 
@@ -36,9 +37,10 @@ func (c *Client) CheckCapabilities(ctx context.Context) (Capabilities, error) {
 	if err != nil {
 		return Capabilities{}, fmt.Errorf("%w: screenshot portal: %v", ErrPortalUnavailable, err)
 	}
-	screenshotTargets, err := uint32Property(object, screenshotTargetsProperty)
+	screenshotTargets, targetsErr := uint32Property(object, screenshotTargetsProperty)
+	screenshotTargetOption, err := resolveScreenshotTargetOption(screenshotVersion, screenshotTargets, targetsErr)
 	if err != nil {
-		return Capabilities{}, fmt.Errorf("%w: screenshot targets: %v", ErrPortalUnavailable, err)
+		return Capabilities{}, err
 	}
 	globalShortcutsVersion, err := uint32Property(object, globalShortcutsVersionProperty)
 	if err != nil {
@@ -51,8 +53,24 @@ func (c *Client) CheckCapabilities(ctx context.Context) (Capabilities, error) {
 	return Capabilities{
 		ScreenshotVersion:      screenshotVersion,
 		ScreenshotTargets:      screenshotTargets,
+		ScreenshotTargetOption: screenshotTargetOption,
 		GlobalShortcutsVersion: globalShortcutsVersion,
 	}, nil
+}
+
+// resolveScreenshotTargetOption supports Screenshot portal v2, which exposes
+// interactive selection but does not expose the v3 AvailableTargets property.
+func resolveScreenshotTargetOption(version, targets uint32, targetsErr error) (bool, error) {
+	if targetsErr != nil {
+		if version >= 2 {
+			return false, nil
+		}
+		return false, fmt.Errorf("%w: interactive screenshot is unavailable", ErrPortalUnavailable)
+	}
+	if targets&areaTarget == 0 {
+		return false, fmt.Errorf("%w: area selection is not supported", ErrPortalUnavailable)
+	}
+	return true, nil
 }
 
 func uint32Property(object dbus.BusObject, property string) (uint32, error) {

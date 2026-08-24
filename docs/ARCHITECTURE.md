@@ -33,6 +33,6 @@ internal/portal     COSMIC/XDG portal adapters
 
 ## Next implementation step
 
-The first portal foundation is now in `internal/portal`: it validates COSMIC/Wayland, checks Screenshot and GlobalShortcuts capabilities, delegates interactive area capture, and registers one global shortcut. GTK4 UI should connect to these adapters through the existing coordinator rather than moving application logic into widgets.
+The first portal foundation is now in `internal/portal`: it validates COSMIC/Wayland, checks Screenshot and GlobalShortcuts capabilities, delegates interactive area capture, and registers one global shortcut. Screenshot portal v2 is supported through its interactive mode when the v3 `AvailableTargets` property is absent. GTK4 UI should connect to these adapters through the existing coordinator rather than moving application logic into widgets.
 
 Portal failures are returned as explicit errors. The application does not silently fall back to X11, compositor-specific capture, or another desktop environment.

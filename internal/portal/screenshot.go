@@ -16,25 +16,38 @@ const screenshotInterface = "org.freedesktop.portal.Screenshot"
 // ScreenshotSelector delegates interactive area selection to the Screenshot
 // portal. The returned bytes are transient and belong to the caller.
 type ScreenshotSelector struct {
-	client       *Client
-	parentWindow string
+	client        *Client
+	parentWindow  string
+	useAreaTarget bool
 }
 
 func NewScreenshotSelector(client *Client, parentWindow string) *ScreenshotSelector {
-	return &ScreenshotSelector{client: client, parentWindow: parentWindow}
+	return &ScreenshotSelector{client: client, parentWindow: parentWindow, useAreaTarget: true}
+}
+
+func NewScreenshotSelectorWithCapabilities(client *Client, parentWindow string, capabilities Capabilities) *ScreenshotSelector {
+	return &ScreenshotSelector{
+		client:        client,
+		parentWindow:  parentWindow,
+		useAreaTarget: capabilities.ScreenshotTargetOption,
+	}
 }
 
 func (s *ScreenshotSelector) Select(ctx context.Context) (ports.Image, error) {
 	s.client.mu.Lock()
 	defer s.client.mu.Unlock()
 
+	options := map[string]dbus.Variant{
+		"handle_token": dbus.MakeVariant("cosmic_select_screenshot"),
+		"interactive":  dbus.MakeVariant(true),
+	}
+	if s.useAreaTarget {
+		options["target"] = dbus.MakeVariant(uint32(4))
+	}
+
 	call := s.client.object().CallWithContext(ctx, screenshotInterface+".Screenshot", 0,
 		s.parentWindow,
-		map[string]dbus.Variant{
-			"handle_token": dbus.MakeVariant("cosmic_select_screenshot"),
-			"interactive":  dbus.MakeVariant(true),
-			"target":       dbus.MakeVariant(uint32(4)),
-		},
+		options,
 	)
 	if call.Err != nil {
 		return ports.Image{}, fmt.Errorf("request screenshot: %w", call.Err)
