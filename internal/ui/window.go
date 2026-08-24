@@ -39,11 +39,11 @@ func showMainWindow(application *gtk.Application, client *portal.Client, startup
 	content.SetMarginEnd(24)
 
 	title := gtk.NewLabel("COSMIC Select")
-	title.SetXalign(0)
+	title.SetXAlign(0)
 	content.Append(title)
 
 	status := gtk.NewLabel("Ready to connect to COSMIC portals.")
-	status.SetXalign(0)
+	status.SetXAlign(0)
 	status.SetWrap(true)
 	content.Append(status)
 
