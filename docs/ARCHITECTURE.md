@@ -33,6 +33,7 @@ internal/cosmicshortcut COSMIC-native shortcut fallback
 - GTK4 code is isolated in `internal/ui`; the domain and coordinator remain toolkit-independent.
 - When the Global Shortcuts portal is unavailable, the user may explicitly install a COSMIC-native `Super + Shift + S` custom shortcut that launches `cosmic-select --activate`.
 - `--activate` uses screenshot capability checks independently of Global Shortcuts, opens the interactive Screenshot Portal, and discards the returned image after the capture status is reported.
+- `internal/ocr` invokes local Tesseract with a mode-specific temporary image and removes that image before returning.
 
 ## Next implementation step
 

@@ -18,10 +18,10 @@ const applicationID = "com.github.GkIgor.cosmicselect"
 
 // Run starts the GTK application. Portal errors are shown in the window so
 // the user gets a useful result even outside a supported COSMIC session.
-func Run(args []string, client *portal.Client, startupErr error, activationStatus string) {
+func Run(args []string, client *portal.Client, startupErr error, activationStatus, recognizedText string) {
 	application := gtk.NewApplication(applicationID, gio.ApplicationFlagsNone)
 	application.ConnectActivate(func() {
-		showMainWindow(application, client, startupErr, activationStatus)
+		showMainWindow(application, client, startupErr, activationStatus, recognizedText)
 	})
 
 	if code := application.Run(args); code > 0 {
@@ -29,7 +29,7 @@ func Run(args []string, client *portal.Client, startupErr error, activationStatu
 	}
 }
 
-func showMainWindow(application *gtk.Application, client *portal.Client, startupErr error, activationStatus string) {
+func showMainWindow(application *gtk.Application, client *portal.Client, startupErr error, activationStatus, recognizedText string) {
 	window := gtk.NewApplicationWindow(application)
 	window.SetTitle("COSMIC Select")
 	window.SetDefaultSize(420, 260)
@@ -52,6 +52,12 @@ func showMainWindow(application *gtk.Application, client *portal.Client, startup
 	status.SetXAlign(0)
 	status.SetWrap(true)
 	content.Append(status)
+	if recognizedText != "" {
+		text := gtk.NewLabel("Recognized text:\n" + recognizedText)
+		text.SetXAlign(0)
+		text.SetWrap(true)
+		content.Append(text)
+	}
 
 	check := gtk.NewButtonWithLabel("Check portal support")
 	install := gtk.NewButtonWithLabel("Install COSMIC shortcut (Super + Shift + S)")

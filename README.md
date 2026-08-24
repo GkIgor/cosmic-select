@@ -41,7 +41,13 @@ The current window is intentionally small: it is the UI shell for checking COSMI
 
 If the installed COSMIC portal does not expose Global Shortcuts, the window offers an explicit native COSMIC fallback using `Super + Shift + S`. It writes the custom shortcut under the user's COSMIC configuration and launches the persistent `cosmic-select --activate` binary.
 
-The `--activate` path now opens the interactive Screenshot Portal selection and keeps the captured image transient. It reports the capture result in the GTK4 window; local OCR is the next implementation milestone.
+The `--activate` path now opens the interactive Screenshot Portal selection, runs local OCR, and keeps the captured image transient. Recognized text is shown in the GTK4 window; the action picker is the next implementation milestone.
+
+Local OCR uses Tesseract. On Debian/Ubuntu, install it with:
+
+```sh
+sudo apt install tesseract-ocr tesseract-ocr-eng tesseract-ocr-por
+```
 
 For the fallback to remain available after the terminal closes, build a persistent binary first:
 
