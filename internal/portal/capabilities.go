@@ -26,6 +26,28 @@ func (c *Client) CheckCapabilities(ctx context.Context) (Capabilities, error) {
 	if err := CurrentEnvironment().Validate(); err != nil {
 		return Capabilities{}, err
 	}
+	screenshot, err := c.checkScreenshotCapabilities(ctx)
+	if err != nil {
+		return Capabilities{}, err
+	}
+	globalShortcutsVersion, err := c.globalShortcutsVersion(ctx)
+	if err != nil {
+		return Capabilities{}, err
+	}
+	screenshot.GlobalShortcutsVersion = globalShortcutsVersion
+	return screenshot, nil
+}
+
+// CheckScreenshotCapabilities validates only the screenshot half of the
+// integration. This remains useful when COSMIC lacks GlobalShortcuts.
+func (c *Client) CheckScreenshotCapabilities(ctx context.Context) (Capabilities, error) {
+	if err := CurrentEnvironment().Validate(); err != nil {
+		return Capabilities{}, err
+	}
+	return c.checkScreenshotCapabilities(ctx)
+}
+
+func (c *Client) checkScreenshotCapabilities(ctx context.Context) (Capabilities, error) {
 	select {
 	case <-ctx.Done():
 		return Capabilities{}, ctx.Err()
@@ -42,10 +64,6 @@ func (c *Client) CheckCapabilities(ctx context.Context) (Capabilities, error) {
 	if err != nil {
 		return Capabilities{}, err
 	}
-	globalShortcutsVersion, err := uint32Property(object, globalShortcutsVersionProperty)
-	if err != nil {
-		return Capabilities{}, fmt.Errorf("%w: global shortcuts portal: %v", ErrPortalUnavailable, err)
-	}
 	if !screenshotTargetOption && targetsErr == nil {
 		return Capabilities{}, fmt.Errorf("%w: area selection is not supported", ErrPortalUnavailable)
 	}
@@ -54,8 +72,20 @@ func (c *Client) CheckCapabilities(ctx context.Context) (Capabilities, error) {
 		ScreenshotVersion:      screenshotVersion,
 		ScreenshotTargets:      screenshotTargets,
 		ScreenshotTargetOption: screenshotTargetOption,
-		GlobalShortcutsVersion: globalShortcutsVersion,
 	}, nil
+}
+
+func (c *Client) globalShortcutsVersion(ctx context.Context) (uint32, error) {
+	select {
+	case <-ctx.Done():
+		return 0, ctx.Err()
+	default:
+	}
+	version, err := uint32Property(c.object(), globalShortcutsVersionProperty)
+	if err != nil {
+		return 0, fmt.Errorf("%w: global shortcuts portal: %v", ErrPortalUnavailable, err)
+	}
+	return version, nil
 }
 
 // resolveScreenshotTargetOption supports Screenshot portal v2, which exposes

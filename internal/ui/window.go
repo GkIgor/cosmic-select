@@ -18,10 +18,10 @@ const applicationID = "com.github.GkIgor.cosmicselect"
 
 // Run starts the GTK application. Portal errors are shown in the window so
 // the user gets a useful result even outside a supported COSMIC session.
-func Run(args []string, client *portal.Client, startupErr error, activated bool) {
+func Run(args []string, client *portal.Client, startupErr error, activationStatus string) {
 	application := gtk.NewApplication(applicationID, gio.ApplicationFlagsNone)
 	application.ConnectActivate(func() {
-		showMainWindow(application, client, startupErr, activated)
+		showMainWindow(application, client, startupErr, activationStatus)
 	})
 
 	if code := application.Run(args); code > 0 {
@@ -29,7 +29,7 @@ func Run(args []string, client *portal.Client, startupErr error, activated bool)
 	}
 }
 
-func showMainWindow(application *gtk.Application, client *portal.Client, startupErr error, activated bool) {
+func showMainWindow(application *gtk.Application, client *portal.Client, startupErr error, activationStatus string) {
 	window := gtk.NewApplicationWindow(application)
 	window.SetTitle("COSMIC Select")
 	window.SetDefaultSize(420, 260)
@@ -45,8 +45,8 @@ func showMainWindow(application *gtk.Application, client *portal.Client, startup
 	content.Append(title)
 
 	initialStatus := "Ready to connect to COSMIC portals."
-	if activated {
-		initialStatus = "Shortcut activation received."
+	if activationStatus != "" {
+		initialStatus = activationStatus
 	}
 	status := gtk.NewLabel(initialStatus)
 	status.SetXAlign(0)

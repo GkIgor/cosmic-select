@@ -3,6 +3,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"os"
 
 	"github.com/GkIgor/cosmic-select/internal/portal"
@@ -12,11 +14,16 @@ import (
 func main() {
 	client, err := portal.NewClient()
 	if err != nil {
-		ui.Run(os.Args, nil, err, hasActivation(os.Args))
+		ui.Run(os.Args, nil, err, "")
 		return
 	}
 	defer client.Close()
-	ui.Run(os.Args, client, nil, hasActivation(os.Args))
+
+	activationStatus := ""
+	if hasActivation(os.Args) {
+		activationStatus = activate(client)
+	}
+	ui.Run(os.Args, client, nil, activationStatus)
 }
 
 func hasActivation(args []string) bool {
@@ -26,4 +33,17 @@ func hasActivation(args []string) bool {
 		}
 	}
 	return false
+}
+
+func activate(client *portal.Client) string {
+	capabilities, err := client.CheckScreenshotCapabilities(context.Background())
+	if err != nil {
+		return fmt.Sprintf("Screenshot portal unavailable: %v", err)
+	}
+	selector := portal.NewScreenshotSelectorWithCapabilities(client, "", capabilities)
+	image, err := selector.Select(context.Background())
+	if err != nil {
+		return fmt.Sprintf("Screen selection failed: %v", err)
+	}
+	return fmt.Sprintf("Screen region captured (%d bytes). Local OCR is the next step.", len(image.Data))
 }
