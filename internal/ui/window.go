@@ -19,7 +19,7 @@ const applicationID = "com.github.GkIgor.cosmicselect"
 // Run starts the GTK application. Portal errors are shown in the window so
 // the user gets a useful result even outside a supported COSMIC session.
 func Run(args []string, client *portal.Client, startupErr error, activationStatus, recognizedText string) {
-	application := gtk.NewApplication(applicationID, gio.ApplicationFlagsNone)
+	application := gtk.NewApplication(applicationIdentifier(activationStatus), gio.ApplicationFlagsNone)
 	application.ConnectActivate(func() {
 		showMainWindow(application, client, startupErr, activationStatus, recognizedText)
 	})
@@ -27,6 +27,13 @@ func Run(args []string, client *portal.Client, startupErr error, activationStatu
 	if code := application.Run(args); code > 0 {
 		os.Exit(code)
 	}
+}
+
+func applicationIdentifier(activationStatus string) string {
+	if activationStatus != "" {
+		return applicationID + ".activation"
+	}
+	return applicationID
 }
 
 func showMainWindow(application *gtk.Application, client *portal.Client, startupErr error, activationStatus, recognizedText string) {
